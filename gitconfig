@@ -1,0 +1,22 @@
+[core]
+	autocrlf = input
+[user]
+	email = josbrau@sandia.gov
+	name = Josh Braun
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  ui = true
+  pager = true
+[alias]
+	st = status
+	lg = log --graph --decorate --oneline
+	ba = branch -a
+	ch = checkout

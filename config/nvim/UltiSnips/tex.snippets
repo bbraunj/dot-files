@@ -1,0 +1,47 @@
+snippet eq
+\begin{equation}
+	$0
+\end{equation}
+endsnippet
+
+snippet eql
+\label{eq:$0}
+endsnippet
+
+snippet tl
+\label{t:$0}
+endsnippet
+
+snippet fl
+\label{fig:$0}
+endsnippet
+
+snippet beg
+\begin{$1}
+	$2	
+\end{$1}
+endsnippet
+
+snippet nc
+\newcommand{$1}{$2}
+endsnippet
+
+snippet figure
+\begin{figure}[hbt!]
+\centering
+\includegraphics[width=0.5\textwidth]{$1}
+\caption{${2:Caption}}
+\label{fig:${3:label}}
+\end{figure}
+endsnippet
+
+snippet table
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{c|c}
+$1
+\end{tabular}
+\caption{${2:Caption}}
+\label{t:${3:label}}
+\end{table}
+endsnippet
