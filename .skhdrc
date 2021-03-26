@@ -1,0 +1,231 @@
+# ################################################################ #
+# THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
+# FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..        #
+# ################################################################ #
+
+# A list of all built-in modifier and literal keywords can
+# be found at https://github.com/koekeishiya/skhd/issues/1
+#
+# A hotkey is written according to the following rules:
+#
+#   hotkey       = <mode> '<' <action> | <action>
+#
+#   mode         = 'name of mode' | <mode> ',' <mode>
+#
+#   action       = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
+#                  <keysym> ':' <command>          | <keysym> '->' ':' <command>
+#                  <keysym> ';' <mode>             | <keysym> '->' ';' <mode>
+#
+#   keysym       = <mod> '-' <key> | <key>
+#
+#   mod          = 'modifier keyword' | <mod> '+' <mod>
+#
+#   key          = <literal> | <keycode>
+#
+#   literal      = 'single letter or built-in keyword'
+#
+#   keycode      = 'apple keyboard kVK_<Key> values (0x3C)'
+#
+#   proc_map_lst = * <proc_map>
+#
+#   proc_map     = <string> ':' <command> | <string>     '~' |
+#                  '*'      ':' <command> | '*'          '~'
+#
+#   string       = '"' 'sequence of characters' '"'
+#
+#   command      = command is executed through '$SHELL -c' and
+#                  follows valid shell syntax. if the $SHELL environment
+#                  variable is not set, it will default to '/bin/bash'.
+#                  when bash is used, the ';' delimeter can be specified
+#                  to chain commands.
+#
+#                  to allow a command to extend into multiple lines,
+#                  prepend '\' at the end of the previous line.
+#
+#                  an EOL character signifies the end of the bind.
+#
+#   ->           = keypress is not consumed by skhd
+#
+#   *            = matches every application not specified in <proc_map_lst>
+#
+#   ~            = application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
+#
+# A mode is declared according to the following rules:
+#
+#   mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
+#               '::' <name> '@'               | '::' <name>
+#
+#   name      = desired name for this mode,
+#
+#   @         = capture keypresses regardless of being bound to an action
+#
+#   command   = command is executed through '$SHELL -c' and
+#               follows valid shell syntax. if the $SHELL environment
+#               variable is not set, it will default to '/bin/bash'.
+#               when bash is used, the ';' delimeter can be specified
+#               to chain commands.
+#
+#               to allow a command to extend into multiple lines,
+#               prepend '\' at the end of the previous line.
+#
+#               an EOL character signifies the end of the bind.
+
+# ############################################################### #
+# THE FOLLOWING SECTION CONTAIN SIMPLE MAPPINGS DEMONSTRATING HOW #
+# TO INTERACT WITH THE YABAI WM. THESE ARE SUPPOSED TO BE USED AS #
+# A REFERENCE ONLY, WHEN MAKING YOUR OWN CONFIGURATION..          #
+# ############################################################### #
+
+# Yabai Control
+fn - y : brew services restart yabai
+fn - q : brew services stop yabai
+fn - w : brew services start yabai
+
+# RDP Control
+# ===========
+# hyper - 1
+hyper - 0x12 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Ron" pause' && osascript -e 'quit app "Microsoft Remote Desktop"'
+# hyper - 2
+hyper - 0x13 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Ron" resume' && open -a "Microsoft Remote Desktop"
+# hyper - 3
+hyper - 0x14 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Harry" pause' && osascript -e 'quit app "Microsoft Remote Desktop"'
+# hyper - 4
+hyper - 0x15 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Harry" resume' && open -a "Microsoft Remote Desktop"
+
+# Windows
+# =======
+# focus window
+ctrl - h : yabai -m window --focus west
+ctrl - l : yabai -m window --focus east
+ctrl - k : yabai -m window --focus north
+ctrl - j : yabai -m window --focus south
+
+# Swap window
+ctrl + cmd - l : yabai -m window --swap east
+ctrl + cmd - h : yabai -m window --swap west
+ctrl + cmd - k : yabai -m window --swap north
+ctrl + cmd - j : yabai -m window --swap south
+
+# Warp window
+ctrl + alt - l : yabai -m window --warp east
+ctrl + alt - h : yabai -m window --warp west
+ctrl + alt - k : yabai -m window --warp north
+ctrl + alt - j : yabai -m window --warp south
+
+# zoom window
+hyper - d : yabai -m window --toggle zoom-parent
+hyper - f : yabai -m window --toggle zoom-fullscreen
+
+# increase window size
+alt - h : yabai -m window --resize left:-40:0; yabai -m window --resize right:-40:0
+alt - l : yabai -m window --resize left:40:0; yabai -m window --resize right:40:0
+alt - j : yabai -m window --resize bottom:0:40; yabai -m window --resize top:0:40
+alt - k : yabai -m window --resize bottom:0:-40; yabai -m window --resize top:0:-40
+
+# float / unfloat window and center on screen
+hyper - t : yabai -m window --toggle float;\
+            yabai -m window --grid 4:4:1:1:2:2
+# remember float setting
+hyper - t : (app=$(yabai -m query --windows --window mouse | jq -r '.app'); yabai -m window --toggle float &&  yabai -m rule --add app='$app' label=$(echo $app | tr ' ' '_')_manage_off manage=off && echo "yabai -m rule --add app='$app' label=$(echo $app | tr ' ' '_')_manage_off manage=off" >> ~/.yabairc) 2> ~/.yabailog
+# hyper - t : app=$(yabai -m query --windows --window mouse | jq -r '.app') && yabai -m window --toggle float && yabai -m rule --remove $(echo $app | tr ' ' '_')_manage_off || yabai -m rule --add app='$app' label=$(echo $app | tr ' ' '_')_manage_off manage=off && echo "yabai -m rule --add app='$app' label=$(echo $app | tr ' ' '_')_manage_off manage=off" >> ~/.yabairc
+
+# Rotate Tree clockwise/counter-clockwise
+hyper - r : yabai -m space --rotate 270
+hyper - e : yabai -m space --rotate 90
+
+# toggle window split type
+ctrl - space : yabai -m window --toggle split
+
+# Open new terminal window
+hyper - n : if [ $(ps aux | grep -v grep | grep -c iTerm2) -eq 0 ]; then open -a iTerm; else osascript ~/.scripts/open_iTerm_window.osascript; fi
+
+# Spaces
+# ======
+# Focus prev/next space
+fn - h : yabai -m space --focus prev
+fn - l : yabai -m space --focus next
+
+# Send window to prev/next space and follow focus
+fn + cmd - h : yabai -m window --space prev; yabai -m space --focus prev
+fn + cmd - l : yabai -m window --space next; yabai -m space --focus next
+
+# Swap space with prev/next space
+fn + shift - h : yabai -m space --swap prev
+fn + shift - l : yabai -m space --swap next
+
+
+# Stacks
+# ======
+# Toggle foucus on a stack
+hyper - return : yabai -m window --focus stack.next || yabai -m window --focus stack.first
+
+# Stack all windows in space
+# hyper - *
+hyper - 0x1C : yabai -m space --layout stack 
+
+# Stack current window with another
+hyper - h : window=$(yabai -m query --windows --window | jq -r '.id') && yabai -m window west --stack $window
+hyper - l : window=$(yabai -m query --windows --window | jq -r '.id') && yabai -m window east --stack $window
+hyper - j : window=$(yabai -m query --windows --window | jq -r '.id') && yabai -m window south --stack $window
+hyper - k : window=$(yabai -m query --windows --window | jq -r '.id') && yabai -m window north --stack $window
+
+# Switch back to bsp layout
+# hyper - b : yabai -m space --layout bsp 
+hyper - b : window=$(yabai -m query --windows --window | jq -r '.id') && yabai -m window $window --toggle float && yabai -m window $window --toggle float
+# stack next window onto current window
+
+
+
+# ================= Unused =================
+
+# swap managed window
+# shift + alt - h : yabai -m window --swap north
+
+# move managed window
+# shift + cmd - h : yabai -m window --warp east
+
+# balance size of windows
+# shift + alt - 0 : yabai -m space --balance
+
+# make floating window fill screen
+# shift + alt - up     : yabai -m window --grid 1:1:0:0:1:1
+
+# make floating window fill left-half of screen
+# shift + alt - left   : yabai -m window --grid 1:2:0:0:1:1
+
+# create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+# shift + cmd - n : yabai -m space --create && \
+#                   index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && \
+#                   yabai -m window --space "${index}" && \
+#                   yabai -m space --focus "${index}"
+
+# fast focus desktop
+# cmd + alt - x : yabai -m space --focus recent
+# cmd + alt - 1 : yabai -m space --focus 1
+
+# send window to desktop and follow focus
+# shift + cmd - z : yabai -m window --space next; yabai -m space --focus next
+# shift + cmd - 2 : yabai -m window --space  2; yabai -m space --focus 2
+
+# focus monitor
+# ctrl + alt - z  : yabai -m display --focus prev
+# ctrl + alt - 3  : yabai -m display --focus 3
+
+# send window to monitor and follow focus
+# ctrl + cmd - c  : yabai -m window --display next; yabai -m display --focus next
+# ctrl + cmd - 1  : yabai -m window --display 1; yabai -m display --focus 1
+
+# move floating window
+# shift + ctrl - a : yabai -m window --move rel:-20:0
+# shift + ctrl - s : yabai -m window --move rel:0:20
+
+
+# set insertion point in focused container
+# ctrl + alt - h : yabai -m window --insert west
+
+
+
+# toggle sticky(+float), topmost, picture-in-picture
+# alt - p : yabai -m window --toggle sticky;\
+#           yabai -m window --toggle topmost;\
+#           yabai -m window --toggle pip
