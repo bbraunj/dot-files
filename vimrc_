@@ -1,0 +1,383 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" ########################################################################
+" ############################  Vim Settings #############################
+" ########################################################################
+
+" --------- Indentation ---------
+set tabstop=4
+set expandtab
+set softtabstop=4
+set shiftwidth=4
+
+" PEP Indentation
+au BufNewFile,BufRead *.py
+    \ set textwidth=79 |
+    \ set expandtab |
+    \ set autoindent |
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.tex
+    \ set textwidth=79
+
+" ----------- Colors ------------
+let python_highlight_all=1
+syntax on
+colorscheme zenburn
+" colorscheme solarized
+
+" ------- Other Settings --------
+" Backspace adjustments
+set backspace=indent,eol,start
+
+" Better pasting from system clipboard
+map <Leader>p :set paste<CR>o<esc>"*]p:set nopaste<cr>"
+
+" Enable folding with spacebar
+set foldlevel=2
+set foldmethod=indent
+nnoremap <space> za
+
+set encoding=utf-8
+set number
+
+" Native fuzzy finding
+set path+=**
+set wildmenu
+
+" Buffer navigation
+" - Note: lclose closes the current syntastic buffer before navigation commands
+nnoremap [b :lclose<CR>:bp<CR>
+nnoremap ]b :lclose<CR>:bn<CR>
+nnoremap gb :lclose<CR>:b#<CR>
+nnoremap <Leader>b :lclose<CR>:ls<CR>:b<Space>
+
+" vv to generate new vertical split
+nnoremap <silent> v\| <C-w>v
+
+" vh to generate new horizontal split
+nnoremap <silent> v- :split<CR>
+
+" Split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+" Horizontal navigation (when :set nowrap)
+nnoremap <M-L> 20zl
+nnoremap <M-H> 20zh
+
+" Insert PUDB Breakpoint
+nnoremap <Leader>q o <BS>import pudb; pudb.set_trace()<ESC>
+
+" Highlight current line
+set cursorline
+
+" Persistent Undo
+if has('persistent_undo')       "check if your vim version supports it
+    set undofile                 "turn on the feature  
+    set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
+endif 
+
+" Mouse mode
+set mouse=a
+
+" Yank to system clipboard with gy. Put wiht gp.
+nnoremap gy "+y
+vnoremap gy "+y
+nnoremap gP "+P
+vnoremap gP "+P
+nnoremap gp "+p
+vnoremap gp "+p
+
+" Have Vim jump to the last position when reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" ########################################################################
+" #####################   Vim-Plug Plugin Settings #######################
+" ########################################################################
+
+" Vim-Plug
+call plug#begin('~/.vim/plugged')
+
+Plug 'vim-scripts/TeTrIs.vim'
+
+" ------------------------------------------------
+" ------------------ Utility ---------------------
+" ------------------------------------------------
+
+" ----- Commentary -----
+Plug 'tpope/vim-commentary'
+
+" ----- NERDTree -----
+Plug 'scrooloose/nerdtree'
+map <C-Y> :NERDTreeToggle<CR>
+let g:NERDTreeNodeDelimiter = "\u00a0"
+let NERDTreeQuitOnOpen = 1
+let NERDTreeAutoDeleteBuffer = 1
+
+Plug 'Xuyuanp/nerdtree-git-plugin'
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "M",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "R",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+" ----------- Syntax -----------
+" Plug 'vim-syntastic/syntastic'
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" let g:syntastic_python_checkers = ['flake8']
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" let g:syntastic_loc_list_height=3
+
+" Show marks in number bar
+Plug 'kshenoy/vim-signature'
+
+" ------------ Git ------------
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-unimpaired'
+
+" ------- Quick Finding -------
+" Plug 'ctrlpvim/ctrlp.vim'
+" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+" nnoremap <leader>. :CtrlPTag<cr>
+Plug 'junegunn/fzf'
+nnoremap <C-P> :FZF<CR>
+
+Plug 'wsdjeg/FlyGrep.vim'
+nnoremap <Leader>f :FlyGrep<cr>
+
+" ------- Other Plugins -------
+" Swap windows (<Leader>ww in 1st window then same in next)
+Plug 'wesQ3/vim-windowswap'
+
+" Show items in buffer (<Leader>b)
+" Plug 'jeetsukumaran/vim-buffergator'
+
+" Random other useful plugins
+Plug 'tmhedberg/SimpylFold'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-surround'
+Plug 'jeffkreeftmeijer/vim-numbertoggle'
+Plug 'vim-scripts/TaskList.vim'
+Plug 'arecarn/vim-crunch'
+
+Plug 'junegunn/vim-easy-align'
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+
+Plug 'svermeulen/vim-macrobatics'
+Plug 'tpope/vim-repeat'
+
+" Refactoring
+Plug 'terryma/vim-multiple-cursors'
+
+" Plug 'majutsushi/tagbar'
+" nnoremap <silent> <C-M> :TagbarToggle<CR>
+Plug 'liuchengxu/vista.vim'
+let g:vista_default_executive = 'ctags'
+nnoremap <silent> <C-M> :Vista!!<CR>
+
+" Preview plugins
+" Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
+" autocmd Filetype tex setl updatetime=1
+" let g:livepreview_previewer = 'open -a Skim'
+
+Plug 'lervag/vimtex'
+let g:tex_flavor = 'latex'
+let g:vimtex_view_method = 'skim'
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+nmap <leader>md <Plug>MarkdownPreviewToggle
+
+" ------------------------------------------------
+" ------------------- Visual ---------------------
+" ------------------------------------------------
+
+" Info bar at bottom & top of Vim
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+let g:airline_theme='zenburn'
+let g:airline#extensions#bufferline#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
+
+" Show icons for files in NERDTree
+Plug 'ryanoasis/vim-devicons'
+
+" Better syntax highlighting for C++
+Plug 'octol/vim-cpp-enhanced-highlight'
+
+" ------------------------------------------------
+" --------------- Python Plugins -----------------
+" ------------------------------------------------
+" Plug 'tmhedberg/SimpylFold'
+
+Plug 'python/black'
+Plug 'vim-scripts/indentpython.vim'
+
+" Plug 'mvanderkamp/vim-pudb-and-jam'
+" nnoremap <leader>bc :<C-U>PudbClearAll<CR>
+" nnoremap <leader>be :<C-U>PudbEdit<CR>
+" nnoremap <leader>bl :<C-U>PudbList<CR>
+" nnoremap <leader>bq :<C-U>PudbQfList<CR>
+" nnoremap <leader>bp :<C-U>PudbToggle<CR>
+" nnoremap <leader>bu :<C-U>PudbUpdate<CR>
+" Plug 'SkyLeach/pudb.vim'
+
+" if has('nvim')
+"   " let g:python_host_prog='/u'
+"   let g:python3_host_prog='/usr/local/bin/python'
+"   " set the virtual env python used to launch the debugger
+"   let g:pudb_python='/usr/local/bin/python'
+"   " set the entry point (script) to use for pudb
+"   " let g:pudb_entry_point='~/src/poweruser_tools/test/test_templates.py'
+"   " Unicode symbols work fine (nvim, iterm, tmux, nyovim tested)
+"   let g:pudb_breakpoint_symbol='!'
+" endif
+" nnoremap <C-b> :PUDBToggleBreakPoint<CR>
+" inoremap <C-b> <ESC>:PUDBToggleBreakPoint<CR>a
+
+" Plug 'KangOl/vim-pudb'
+" nnoremap <C-b> :TogglePudbBreakPoint<CR>
+" inoremap <C-b> <ESC>:TogglePudbBreakPoint<CR>a
+
+
+" -------------------------------------------------
+" --------------- Vim/Tmux Plugins ----------------
+" -------------------------------------------------
+" Plug 'christoomey/vim-tmux-navigator'
+" let g:tmux_navigator_no_mappings = 1
+" nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
+" nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
+" nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
+" nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+
+Plug 'wellle/tmux-complete.vim'
+Plug 'roxma/vim-tmux-clipboard'
+Plug 'tmux-plugins/vim-tmux-focus-events'
+
+" Plug 'benmills/vimux'
+" Plug 'jebaum/vim-tmuxify'
+Plug 'voldikss/vim-floaterm'
+Plug 'janko/vim-test'
+let test#strategy = "floaterm"
+let test#python#runner = "pytest"
+nmap <silent> <Leader>tn :TestNearest -vv -s<CR>
+nmap <silent> <Leader>tf :TestFile<CR>
+nmap <silent> <Leader>ts :TestSuite<CR>
+nmap <silent> <Leader>tl :TestLast<CR>
+nmap <silent> <Leader>tv :TestVisit<CR>
+
+" ===========================================================================
+" ======================== Autocomplete using ncm2 ==========================
+" ===========================================================================
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+Plug 'neovim/nvim-lspconfig'
+Plug 'kabouzeid/nvim-lspinstall'
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" IMPORTANT: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+
+" NOTE: you need to install completion sources to get completions. Check
+" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+
+" When the <Enter> key is pressed while the popup menu is visible, it only
+" hides the menu. Use this mapping to close the menu and also start a new
+" line.
+inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
+" Use <TAB> to select the popup menu:
+inoremap <expr><Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr><S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Buffer completion
+" -----------------
+" Current buffer
+Plug 'ncm2/ncm2-bufword'
+" Other buffers
+Plug 'fgrsnau/ncm-otherbuf'
+
+" Directories/Files completion
+" ----------------------------
+Plug 'ncm2/ncm2-path'
+
+" Ultisnips completion
+" --------------------
+Plug 'ncm2/ncm2-ultisnips'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+let g:UltiSnipsExpandTrigger		= "<c-j>"
+" let g:UltiSnipsSnippetDirectories=["UltiSnips", "mysnippets"]
+
+" Spell check completion
+" ----------------------
+Plug 'fgrsnau/ncm2-aspell'
+Plug 'filipekiss/ncm2-look.vim'
+
+" Vimtex
+" ------
+" augroup my_cm_setup
+" autocmd!
+" autocmd BufEnter * call ncm2#enable_for_buffer()
+" autocmd Filetype tex call ncm2#register_source({
+" 		\ 'name': 'vimtex',
+" 		\ 'priority': 8,
+" 		\ 'scope': ['tex'],
+" 		\ 'mark': 'tex',
+" 		\ 'word_pattern': '\w+',
+" 		\ 'complete_pattern': g:vimtex#re#ncm2,
+" 		\ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
+" 		\ })
+" augroup END
+" ---------------------------------------------------------------------------
+
+call plug#end()
+
+" Python completion using built-in neovim-lsp
+" -------------------------------------------
+lua << EOF
+require('lspconfig').pyls.setup{on_init = require('ncm2').register_lsp_source}
+
+-- Mappings
+local function buf_set_keymap(...)
+    vim.api.nvim_buf_set_keymap(bufnr, ...)
+end
+
+local opts = {noremap = true, silent = true}
+buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
+buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
+buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+buf_set_keymap("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+buf_set_keymap("n", "<space>e", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
+buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
+buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
+
+EOF
+" require('lspconfig').texlab.setup{on_init = require('ncm2').register_lsp_source}
+hi LspDiagnosticsVirtualTextError guifg=red gui=bold,italic,underline
+hi LspDiagnosticsVirtualTextWarning guifg=orange gui=bold,italic,underline
+hi LspDiagnosticsVirtualTextInformation guifg=yellow gui=bold,italic,underline
+hi LspDiagnosticsVirtualTextHint guifg=green gui=bold,italic,underline
