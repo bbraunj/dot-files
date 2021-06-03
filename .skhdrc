@@ -139,6 +139,10 @@ ctrl - space : yabai -m window --toggle split
 # Open new terminal window
 hyper - n : if [ $(ps aux | grep -v grep | grep -c iTerm2) -eq 0 ]; then open -a iTerm; else osascript ~/.scripts/open_iTerm_window.osascript; fi
 
+# Open Typora w/ Pratt Notes
+hyper - p : open /Users/bbraunj/Nextcloud/Documents/Pratt/Pratt_Meeting_Notes.md
+
+
 # Spaces
 # ======
 # Focus prev/next space

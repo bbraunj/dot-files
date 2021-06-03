@@ -76,6 +76,9 @@ yabai -m rule --add app="Messages" manage=off border=off
 yabai -m rule --add app="Preview" manage=off border=off
 yabai -m rule --add app="VLC" manage=off border=off
 yabai -m rule --add app="NoMachine" opacity=1
+yabai -m rule --add app="python3" manage=off
+yabai -m rule --add app="Dictionary" manage=off
+yabai -m rule --add app="Noty" manage=off sticky=on
 
 yabai -m rule --add app="Safari" title="^General$" manage=off border=off
 yabai -m rule --add app="Safari" title="^Tabs$" manage=off border=off
