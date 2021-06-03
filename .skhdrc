@@ -95,10 +95,10 @@ hyper - 0x15 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Harry" re
 # Windows
 # =======
 # focus window
-ctrl - h : yabai -m window --focus west
-ctrl - l : yabai -m window --focus east
-ctrl - k : yabai -m window --focus north
-ctrl - j : yabai -m window --focus south
+ctrl - h : yabai -m window --focus west; if [ $? -ne 0 ]; then yabai -m display --focus west; fi
+ctrl - l : yabai -m window --focus east; if [ $? -ne 0 ]; then yabai -m display --focus east; fi
+ctrl - k : yabai -m window --focus north; if [ $? -ne 0 ]; then yabai -m display --focus north; fi
+ctrl - j : yabai -m window --focus south; if [ $? -ne 0 ]; then yabai -m display --focus south; fi
 
 # Swap window
 ctrl + cmd - l : yabai -m window --swap east
@@ -107,10 +107,10 @@ ctrl + cmd - k : yabai -m window --swap north
 ctrl + cmd - j : yabai -m window --swap south
 
 # Warp window
-ctrl + alt - l : yabai -m window --warp east
-ctrl + alt - h : yabai -m window --warp west
-ctrl + alt - k : yabai -m window --warp north
-ctrl + alt - j : yabai -m window --warp south
+ctrl + alt - l : yabai -m window --warp east; if [ $? -ne 0 ]; then yabai -m window --display east && yabai -m display --focus east; fi
+ctrl + alt - h : yabai -m window --warp west; if [ $? -ne 0 ]; then yabai -m window --display west && yabai -m display --focus west; fi
+ctrl + alt - k : yabai -m window --warp north; if [ $? -ne 0 ]; then yabai -m window --display north && yabai -m display --focus north; fi
+ctrl + alt - j : yabai -m window --warp south; if [ $? -ne 0 ]; then yabai -m window --display south && yabai -m display --focus south; fi
 
 # zoom window
 hyper - d : yabai -m window --toggle zoom-parent
