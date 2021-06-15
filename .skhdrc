@@ -94,11 +94,27 @@ hyper - 0x15 : ssh 192.168.0.190 '/usr/local/bin/VBoxManage controlvm "Harry" re
 
 # Windows
 # =======
-# focus window
-ctrl - h : yabai -m window --focus west; if [ $? -ne 0 ]; then yabai -m display --focus west; fi
-ctrl - l : yabai -m window --focus east; if [ $? -ne 0 ]; then yabai -m display --focus east; fi
-ctrl - k : yabai -m window --focus north; if [ $? -ne 0 ]; then yabai -m display --focus north; fi
-ctrl - j : yabai -m window --focus south; if [ $? -ne 0 ]; then yabai -m display --focus south; fi
+# focus window or tmux pane
+ctrl - h [
+    *        : yabai -m window --focus west; if [ $? -ne 0 ]; then yabai -m display --focus west; fi
+    "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_left}') -ne 1 ]]; then tmux select-pane -L; else yabai -m window --focus west; if [ $? -ne 0 ]; then yabai -m display --focus west; fi; fi
+]
+ctrl - l [
+    *        : yabai -m window --focus east; if [ $? -ne 0 ]; then yabai -m display --focus east; fi
+    "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_right}') -ne 1 ]]; then tmux select-pane -R; else yabai -m window --focus east; if [ $? -ne 0 ]; then yabai -m display --focus east; fi; fi
+]
+ctrl - k [
+    *        : yabai -m window --focus north; if [ $? -ne 0 ]; then yabai -m display --focus north; fi
+    "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_top}') -ne 1 ]]; then tmux select-pane -U; else yabai -m window --focus north; if [ $? -ne 0 ]; then yabai -m display --focus north; fi; fi
+    # "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_top}') -ne 1 ]]; then tmux if-shell "$is_vim" "send-keys C-k"  "select-pane -U"; else yabai -m window --focus north; if [ $? -ne 0 ]; then yabai -m display --focus north; fi; fi
+    # "iTerm2" : skhd --key "ctrl - k"
+]
+ctrl - j [
+    *        : yabai -m window --focus south; if [ $? -ne 0 ]; then yabai -m display --focus south; fi
+    "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_bottom}') -ne 1 ]]; then tmux select-pane -D; else yabai -m window --focus south; if [ $? -ne 0 ]; then yabai -m display --focus south; fi; fi
+    # "iTerm2" : if [[ $(tmux display-message -p '#{pane_at_bottom}') -ne 1 ]]; then tmux if-shell "$is_vim" "send-keys C-j"  "select-pane -D"; else yabai -m window --focus south; if [ $? -ne 0 ]; then yabai -m display --focus south; fi; fi
+    # "iTerm2" : skhd --key "ctrl - j"
+]
 
 # Swap window
 ctrl + cmd - l : yabai -m window --swap east
